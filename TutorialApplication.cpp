@@ -79,7 +79,7 @@ void BasicTutorial_00::createViewport_01(void)
 void BasicTutorial_00::resolveCollision(
     SceneNode *nodeA, SceneNode *nodeB,
     float rA, float rB, bool moveA, bool moveB, 
-	float time)
+	float time, float speed)
 {
     Vector3 posA = nodeA->getPosition();
     Vector3 posB = nodeB->getPosition();
@@ -120,9 +120,13 @@ void BasicTutorial_00::resolveCollisionLargeSphere(float time)
 
 	for (int i=0;i<mNumSpheres;i++){
 		SceneNode *small = mSceneNode[i];
-		resolveCollision(mLargeSphereSceneNode, small, largeR, smallR, false, true, time);
-
+		resolveCollision(mLargeSphereSceneNode, small, largeR, smallR, false, true, time, mMoveSpeed);
 	}
+	for (int i = 0; i < mNumObstacles; i++) {
+		int index = i + mNumSpheres;
+		SceneNode *small = mSceneNode[index];
+		resolveCollision(mLargeSphereSceneNode, small, largeR, smallR, true, false, time, mMoveSpeed);
+	}	
 }
 
 // perform collision handling for all pairs
@@ -132,11 +136,15 @@ void BasicTutorial_00::resolveCollisionSmallSpheres(float time)
     float rj = 15; // sphere radius
     for (int i = 0; i < mNumSpheres; ++i)
 	{
+		for (int j = 0; j < mNumObstacles; j++) {
+			int index = j + mNumSpheres;
+			resolveCollision(mSceneNode[i], mSceneNode[index], ri, rj, true, false, time, mMoveSpeed / 2);
+		}	
 		for (int j = i+1; j < mNumSpheres; ++j) {
             ///////////////////////
             // add your own stuff
             ///////////////////////
-			resolveCollision(mSceneNode[i], mSceneNode[j], ri, rj, true, true, time);
+			resolveCollision(mSceneNode[i], mSceneNode[j], ri, rj, true, true, time, mMoveSpeed / 2);
         }
     }
 }
@@ -153,10 +161,14 @@ void BasicTutorial_00::resolveCollision(float time)
 // reset positions of all small spheres
 void BasicTutorial_00::reset()
 {
+	mMoveDirection = Vector3::ZERO;
     for (int i = 0; i < mNumSpheres; ++i ) {
         ///////////////////////
         // add your own stuff
         ///////////////////////
+		float x = (float)(rand()%800)-400;
+		float z = (float)(rand()%800)-400;
+		mSceneNode[i]->setPosition(x, 0, z);
     }
 }
 
@@ -483,6 +495,7 @@ bool BasicTutorial_00::keyPressed( const OIS::KeyEvent &arg )
     ///////////////////////
 
     if (arg.key == OIS::KC_B ) {
+		reset();
     }
 
 

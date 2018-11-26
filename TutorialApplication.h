@@ -63,7 +63,7 @@ protected:
     void resolveCollision(
     SceneNode *nodeA, SceneNode *nodeB,
     float rA, float rB, bool moveA, bool moveB, 
-	float time);
+	float time, float speed);
     void resolveCollision(float time);
     void resolveCollisionPair(
     int robotA, int robotB, float rA, float rB);
